@@ -9,7 +9,7 @@
     let endKey = 128;
     let keyWidth;
     let keys = [];
-	let values = [];
+    let values = [];
     let keysImage;
     let highlightKey = null;
     let selectedKey = 39;
@@ -27,9 +27,9 @@
             
             for(let listener of this.keyListeners) listener(keys[key].key);
         },
-		get selectedKey(){
-			return selectedKey;
-		},
+        get selectedKey(){
+            return selectedKey;
+        },
         hiddenListeners: [function(){}],
         onHide: function(fn){
             this.hiddenListeners.push(fn);
@@ -109,18 +109,18 @@
         
         for(let button of placque.querySelectorAll("BUTTON")){
             let mousehold;
-			
+            
             button.addEventListener("mousedown", (e) => {
                 shiftKeys(visualOffset + parseInt(e.target.value) * keyWidth);
-				
-				mousehold = setInterval(()=>{
-					shiftKeys(visualOffset + parseInt(e.target.value) * keyWidth);
-				}, 100);
+                
+                mousehold = setInterval(()=>{
+                    shiftKeys(visualOffset + parseInt(e.target.value) * keyWidth);
+                }, 100);
             }, false);
-			
-			document.addEventListener("mouseup", (e)=>{
-				clearInterval(mousehold);
-			}, false);
+            
+            document.addEventListener("mouseup", (e)=>{
+                clearInterval(mousehold);
+            }, false);
         }
         
         document.addEventListener("mousedown", (e)=>{
@@ -245,14 +245,14 @@
         for(let i = 0; i < endKey; i++){
             if(octave[i % 12].includes("#")){
                 if(i >= startKey){
-					keys.push(new Key(j * keyWidth - keyWidth / 2, 0, i));
-					values[i] = keys.length - 1;
-				}
+                    keys.push(new Key(j * keyWidth - keyWidth / 2, 0, i));
+                    values[i] = keys.length - 1;
+                }
             }else{
                 if(i >= startKey){
-					keys.push(new Key(j * keyWidth, canvas.height / 2, i));
-					values[i] = keys.length - 1;
-				}
+                    keys.push(new Key(j * keyWidth, canvas.height / 2, i));
+                    values[i] = keys.length - 1;
+                }
 
                 j++;
             }
