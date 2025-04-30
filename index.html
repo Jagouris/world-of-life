@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en"><!--//https://editor.p5js.org/pork_hat/sketches/j0DBLkg31-->
+    <head>
+        <meta charset="UTF-8" />
+        <title>World Of Life</title>
+        <link rel="stylesheet" href="style.css">
+		<link rel="icon" type="image/png" href="/favicon.png?">
+		
+        <script type="text/javascript" src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
+        <script type="text/javascript" src="piano.js"></script>
+        <script type="text/javascript" src="mixer.js"></script>
+        <script type="text/javascript" src="game.js"></script>
+        <script type="text/javascript" src="main.js"></script>
+        <script type="module">
+            let WAContext = window.AudioContext || window.webkitAudioContext;
+            let context = new WAContext();
+            
+            window.onload = function(){
+                
+                init(context);
+            };
+            
+            
+            window.onclick = function(){
+                context.resume();
+            };
+        </script>
+    </head>
+    <body>
+		<div style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 26px; font-weight: bold"> 
+			<span id="project-title" contenteditable="true" >Untitled Project</span>
+		</div>
+	
+        <a href="https://github.com/Jagouris/world-of-life"><img src="img/logo2.svg" draggable="false" style="user-select: none; position: absolute;" width="100px" title="World of Life music sequencer" /></a>
+		
+        <div id="control" style="display: inline-block; position: relative; top: 10px; left: 120px">
+            <span style="font-weight: bold" title="Global Tempo">  
+                <button id="tempo-button" class="control" style="width: 20px" data-amount="-1" title="-1 tempo"><b>-</b></button>
+                <div id="tempo-display" contenteditable="true">120 bpm</div>
+                <button id="tempo-button" class="control" style="width: 20px;" data-amount="+1" title="+1 tempo"><b>+</b></button>
+            </span>
+			<span><button class="control" onclick="addInstrument()" title="Add instrument">+ Add Instrument</button></span>
+        </div>
+		
+		
+		
+		<div id="control" style="display: inline-block; position: absolute; top: 10px; right: 10px">
+			<span><button class="control" onclick="newProject()" title="New project">+ New Project</button></span>
+			<span><button class="control" onclick="saveProject()" title="Save project"><img src="img/save.svg" width="13px" /> Save Project</button></span>
+			<span><button class="control" onclick="document.querySelector('#file').click();" title="Load project"><img src="img/load.svg" width="13px" /> Load Project</button></span>
+			<input type="file" id="file" accept="application/json" style="display: none"/>
+		</div>
+        
+        <div id="piano" class="piano">
+            <canvas width="210px" height="70px" style="position: static"></canvas>
+            <button value="-7" class="shift" style="float: left" title="-1 octave">◄◄</button>
+            <button value="-1" class="shift" style="float: left" title="-1 step">◄</button>
+            <span id="selected-note" style="font-weight: bold">C4</span>
+            <button value="7" class="shift" style="float: right" title="+1 octave">►►</button>
+            <button value="1" class="shift" style="float: right" title="+1 step">►</button>
+        </div>
+        
+        <div id="placque" class="placque" style="display: none">
+            <div id="game" class="container">
+                <div id="instrument-name" class="instrument-name" contenteditable="true">Instrument</div>
+                <div style="display: inline-block; ">
+                    <div><img id="grid-template" src="img/grid-template.png"/></div>
+                    <span id="buttons" >
+                    <div style="display: inline-block">
+                        <img id="move" src="img/move_game.svg" width="20px" height="20px" onmousedown="movePlacque()" style="cursor: move" title="Move instrument" draggable="false"/>
+                        <img id="pattern_toggle" src="img/pattern_editor2.svg" width="20px" height="20px" onmousedown="toggleEditor()" style="cursor: pointer; display: none" title="Open pattern editor" draggable="false"/>
+                        <img id="trigger_toggle" src="img/trigger_editor2.svg" width="20px" height="20px" onmousedown="toggleEditor()" style="cursor: pointer;" title="Open trigger point editor" draggable="false"/>
+                        <img id="editor_toggle" src="img/instrument_editor.svg" width="20px" height="20px" onmousedown="toggleProperties()" style="cursor: pointer;" title="View instrument properties" draggable="false"/>
+						<img id="delete" src="img/delete.svg" width="20px" height="20px" onmousedown="deleteInstrument()" style="cursor: pointer;" title="Delete Instrument" draggable="false"/>
+					</div>
+                    <div style="display: inline-block; float: right">
+                        <img id="play_toggle" src="img/play.svg" width="20px" height="20px" onmousedown="toggleRunning()" style="cursor: pointer;" title="Start/stop instrument" draggable="false"/>
+                        <img id="pause_toggle" src="img/pause.svg" width="20px" height="20px" onmousedown="toggleRunning()" style="cursor: pointer; display: none" title="Start/stop instrument" draggable="false"/>
+                    </div>
+                    </span>
+                </div>
+                <div id="resize" class="resize NW" onmousedown="resizeGame({top: true, left: true, bottom: false, right: false})"></div>
+                <div id="resize" class="resize SW" onmousedown="resizeGame({top: false, left: true, bottom: true, right: false})"></div>
+                <div id="resize" class="resize SE" onmousedown="resizeGame({top: false, left: false, bottom: true, right: true})"></div>
+                <div id="resize" class="resize NE" onmousedown="resizeGame({top: true, left: false, bottom: false, right: true})"></div>
+            </div>
+                
+            <div id="properties" class="container" style="display: none; position: relative; vertical-align: top; width: 210px; border-left: 1px solid #000; border-radius: 0px">
+                <div id="game-tab" class="tab" onmousedown="toggleProperties('game')">Edit Game</div>
+                <div id="synth-tab" class="tab" onmousedown="toggleProperties('synth')" style="left: 90px; background: #eee; z-index: -1">Edit Sound</div>
+                <form id="game-properties">
+                    <ul>
+                        <li style="border: none">
+                            <span class="property">Color:</span>
+                            <span class="property" style="float: inline-end"><input type="color" id="color"></span>
+
+                        </li>
+                        <li>
+                            <span class="property">Grid Size:</span>
+                            <span class="property" style="float: inline-end"><input type="number" id="size" value="14" style="width:30px"></span>
+                        </li>
+                        <li>
+                            <span class="property">Tempo:</span>
+                            <span class="property" style="float: inline-end">
+                                <select id="tempo" style="font-size: 20px">
+                                    <option title="Whole Note" value="32">𝅝 </option>
+                                    <option title="Half Note" value="16">𝅗𝅥 </option>
+                                    <option title="Quarter Note" value="8">𝅘𝅥 </option>
+                                    <option title="Eighth Note" value="4">𝅘𝅥𝅮 </option>
+                                    <option selected="selected" title="Sixteenth Note" value="2">𝅘𝅥𝅯 </option>
+                                    <option title="Thirty-second Note" value="1">𝅘𝅥𝅰 </option>
+                                </select>
+                            </span>
+                        </li><!--https://www.rubycliff.com/TheoryManual/ElementsRhythm.html-->
+                        <li>
+                            <span class="property">Repeat every:</span>
+                            <span class="property" style="float: inline-end">
+                                <input type="number" id="repeat-count" value="2" style="width:30px">
+                                <span style="margin-left: 5px; margin-right: 5px; font-weight: 0">✕</span>
+                                <select id="repeat-tempo" style="font-size: 20px">
+                                    <option selected="selected" title="Whole Note" value="32">𝅝 </option>
+                                    <option title="Half Note" value="16">𝅗𝅥 </option>
+                                    <option title="Quarter Note" value="8">𝅘𝅥 </option>
+                                    <option title="Eighth Note" value="4">𝅘𝅥𝅮 </option>
+                                    <option title="Sixteenth Note" value="2">𝅘𝅥𝅯 </option>
+                                    <option title="Thirty-second Note" value="1">𝅘𝅥𝅰 </option>
+                                </select>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="property">Sound:</span>
+                            <span class="property" style="float: inline-end">
+                                <select id="synth">
+                                    <option></option>
+									<option value="midi-synth-3/midi-synth3.export.json">midi-synth-3</option>
+                                </select>
+                            </span>
+                        </li>
+                    </ul>
+                </form>
+				<form id="synth-properties">
+					<ul id="synth-field" style="display: none">
+						<li><span class="property">Please select a sound from the game properties.</span></li>
+					</ul>
+				</form>
+            </div>
+        </div>
+		<div id="mixing-desk" style="position: absolute; bottom: 10px; font-size: 12px; margin-bottom: 20px;">
+			<div id="mixer" style="display: none; margin-left: 40px; position: relative;"><!-- 45px -->
+				<img id="mixer-template" src="img/mixer-template.png" />
+                <canvas id="volume-bar" width="50" height="250"></canvas>
+                <img id="pulley" src="img/pulley.svg" width="20px" height="20px" style="position: absolute; cursor: grab; left: 20px" draggable="false" />
+                <div id="instrument-name" class="mixer-name">Instrument 1</div>
+				
+				<span id="gain" style="display: none; position: absolute; top: 200px; font-weight: normal; font-size: 10px">Gain:<br />1</span>
+				<img id="unmuted" src="img/unmuted.svg" width="27px" height="27px" onmousedown="toggleMute()" style="cursor: pointer;" title="View volume mixer" draggable="false"/>
+				<img id="muted" src="img/muted.svg" width="27px" height="27px" onmousedown="toggleMute()" style="cursor: pointer; display: none" title="View volume mixer" draggable="false"/>
+			</div>
+		</div>
+		<span style="position: absolute; bottom: 10px; right: 10px; font-size: 10px"><a href="https://github.com/Jagouris/world-of-life">World of Life</a> music sequencer, created by <a href="https://github.com/Jagouris/">Jagouris</a> with the help of <a href="https://rnbo.cycling74.com/">RNBO</a> by Cycling '74</span>
+    </body>
+</html>

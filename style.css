@@ -1,0 +1,187 @@
+@font-face {
+    font-family: "Open Sans";
+    src: url("OpenSans.ttf");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+}
+
+a {
+	color: #000;
+	font-weight: bold;
+}
+
+body {
+	height: 100px;
+	background-image: linear-gradient(#fff, #ddd);
+	background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.placque {
+    position: fixed;
+    user-select: none;
+}
+
+.container {
+    display: inline-block;
+    border: 1px solid #000;
+    background: #fff;
+    border-radius: 4px;
+    position: relative;
+}
+
+.piano {
+    position: fixed;
+    background: #fff;
+    width: 210px;
+    left: 100;
+    top: 0;
+    text-align: center;
+    z-index: 100;
+    display: none;
+    user-select: none;
+}
+
+#tempo-display {
+	display: inline-block;
+	width: 80px;
+	text-align: center;
+	user-select: none;
+	background: #fff;
+	outline: none;
+}
+
+.instrument-name {
+    position: absolute;
+    background: #f0f;
+    color: white;
+    top:-33px;
+    left: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 5px;
+    margin-right: 10px;
+    white-space: nowrap;
+    z-index: -1;
+}
+
+.mixer-name {
+    background: #f0f;
+    color: white;
+    font-weight: bold;
+    padding: 3px;
+    margin-right: 10px;
+	display: inline-block;
+	font-size: 16px;
+	white-space: nowrap;
+	writing-mode: vertical-lr;
+	position: absolute;
+	top: 0px;
+}
+
+.tab {
+    position: absolute;
+    background: #fff;
+    color: #000;
+    top:-29px;
+    left: 10px;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 5px;
+    border: 1px solid #000;
+    border-bottom: none;
+    cursor: pointer;
+}
+
+button {
+    border: none;
+    background: #000;
+    color: #fff;
+    font-weight: bold;
+    padding: 5px;
+    cursor: pointer
+}
+
+canvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.property {
+    font-size: 12px;
+    opacity: auto;
+    margin-bottom: 3px;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 7px 3px 7px;
+    border-top: 1px solid #000;
+    clear: right;
+}
+
+li:first-child {
+    border-top: none
+}
+
+.category {
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Tahoma;
+}
+
+.resize {
+    position: absolute;
+    width:7px;
+    height: 7px;
+    background:#000;
+    z-index: 100;
+    opacity: 0;
+}
+
+.resize.NW {
+    top: 0; 
+    left: 0; 
+    cursor: nwse-resize;
+}
+
+.resize.SW {
+    bottom: 0; 
+    left: 0;
+    cursor: nesw-resize;
+}
+
+.resize.SE {
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize; 
+}
+
+.resize.NE {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+}
+
+button.shift {
+    border: 2px solid #fff;
+    background: #000;
+    color: #fff;
+    margin: 5;
+    padding: 2px;
+    cursor: pointer;
+}
+
+button:active {
+    background: #ccff00;
+}
