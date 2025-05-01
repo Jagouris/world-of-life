@@ -236,36 +236,38 @@ function saveProject(){
 	json.games = {};
 	
 	for(let game of gameList){
-		game.updateCoordinates();
-		game.updateDimensions();
-		
-		json.games[i] = {
-			name: game.name,
-			color: game.color,
-			tempo: game.tempo,
-			repeatCount: game.repeatCount,
-			repeatTempo: game.repeatTempo,
-			gridSize: game.gridSize,
-			grid2: game.grid2,
-			left: game.left,
-			top: game.top,
-			width: game.width,
-			height: game.height,
-			gain: game.mixer.gain,
-			soundPath: game.soundPath,
-			muted: game.mixer.muted,
-			running: game.running
-		};
-		
-		
-		//Breaks when you delete while running
-		json.games[i].grid = game.running == true ? game.srcPattern : game.grid;
-
-		
-		json.games[i].synth = {};
-		
-		for(let node of game.placque.querySelector("#synth-properties")){
-			json.games[i].synth[node.id] = node.value;
+		if(game !== undefined){
+			game.updateCoordinates();
+			game.updateDimensions();
+			
+			json.games[i] = {
+				name: game.name,
+				color: game.color,
+				tempo: game.tempo,
+				repeatCount: game.repeatCount,
+				repeatTempo: game.repeatTempo,
+				gridSize: game.gridSize,
+				grid2: game.grid2,
+				left: game.left,
+				top: game.top,
+				width: game.width,
+				height: game.height,
+				gain: game.mixer.gain,
+				soundPath: game.soundPath,
+				muted: game.mixer.muted,
+				running: game.running
+			};
+			
+			
+			//Breaks when you delete while running
+			json.games[i].grid = game.running == true ? game.srcPattern : game.grid;
+	
+			
+			json.games[i].synth = {};
+			
+			for(let node of game.placque.querySelector("#synth-properties")){
+				json.games[i].synth[node.id] = node.value;
+			}
 		}
 		
 		i++;
